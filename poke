@@ -1,0 +1,34 @@
+import RPi.GPIO as GPIO
+import os
+import time
+
+GPIO.setwarnings(False)
+GPIO.cleanup()
+GPIO.setmode(GPIO.BOARD)
+
+time0 =time.time()
+timef = time0+30
+
+ir1 = 11
+led1 = 7
+
+ir2 = 13
+led2 = 29
+
+GPIO.setup(ir1, GPIO.IN)
+GPIO.setup(led1, GPIO.OUT)
+
+GPIO.setup(ir2, GPIO.IN)
+GPIO.setup(led2, GPIO.OUT)
+
+while time.time() < timef:
+  GPIO.output(led1,1)
+  GPIO.output(led2,1)
+  cross1 = GPIO.input(ir1)
+  cross2 = GPIO.input(ir2)
+  print (cross1, cross2)
+  time.sleep(0.1)
+  GPIO.output(led1,0)
+  GPIO.output(led2,0)
+  time.sleep(0.1)
+  
