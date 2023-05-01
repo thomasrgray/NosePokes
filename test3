@@ -1,0 +1,61 @@
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setwarnings(False)
+GPIO.cleanup()
+GPIO.setmode(GPIO.BOARD)
+
+# Set up the pins for the IR beam and solenoids
+ir_beam_1_pin = 16
+odor_solenoid_1_pin = 18
+vacuum_solenoid_1_pin = 22
+ir_beam_2_pin = 24
+odor_solenoid_2_pin = 26
+vacuum_solenoid_2_pin = 32
+
+GPIO.setup(ir_beam_1_pin, GPIO.IN)
+GPIO.setup(odor_solenoid_1_pin, GPIO.OUT)
+GPIO.setup(vacuum_solenoid_1_pin, GPIO.OUT)
+GPIO.setup(ir_beam_2_pin, GPIO.IN)
+GPIO.setup(odor_solenoid_2_pin, GPIO.OUT)
+GPIO.setup(vacuum_solenoid_2_pin, GPIO.OUT)
+
+# Define the function to deliver an odor
+def deliver_odor(solenoid_pin, vacuum_pin):
+    GPIO.output(vacuum_pin, GPIO.LOW)   # Turn off vacuum
+    GPIO.output(solenoid_pin, GPIO.HIGH) # Turn on odor solenoid
+    time.sleep(2) # Wait for 2 seconds
+    GPIO.output(solenoid_pin, GPIO.LOW) # Turn off odor solenoid
+    GPIO.output(vacuum_pin, GPIO.HIGH)  # Turn on vacuum
+
+# Define the function to run the experiment
+def run_experiment(num_trials):
+    for i in range(num_trials):
+        print(f"Trial {i+1}")
+        
+        # Wait for IR beam 1 to be crossed
+        print("Waiting for IR beam 1 to be crossed...")
+        while GPIO.input(ir_beam_1_pin) == GPIO.LOW:
+            time.sleep(0.1)
+        
+        # Deliver odor 1
+        print("Delivering odor 1...")
+        deliver_odor(odor_solenoid_1_pin, vacuum_solenoid_1_pin)
+        
+        # Wait for 4 seconds before starting the next trial
+        time.sleep(4)
+        
+        # Wait for IR beam 2 to be crossed
+        print("Waiting for IR beam 2 to be crossed...")
+        while GPIO.input(ir_beam_2_pin) == GPIO.LOW:
+            time.sleep(0.1)
+        
+        # Deliver odor 2
+        print("Delivering odor 2...")
+        deliver_odor(odor_solenoid_2_pin, vacuum_solenoid_2_pin)
+        
+        # Wait for 4 seconds before starting the next trial
+        time.sleep(4)
+
+# Run the experiment
+run_experiment(10)
