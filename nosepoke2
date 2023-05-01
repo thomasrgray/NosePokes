@@ -1,0 +1,51 @@
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setwarnings(False)
+GPIO.cleanup()
+GPIO.setmode(GPIO.BOARD)
+
+time0 = time.time()
+timef = time0 + 3600  # One hour
+num_trials = 10  # Number of trials
+trial_duration = 2  # Duration of each trial in seconds
+
+irin1 = 18    # DIOA/RJ45_1 - IR beam 1
+irin2 = 22    # DIOB/RJ45_2 - IR beam 2
+odor1 = 29    # POWB/RJ45_3 - Solenoid 1 for odor 1
+vacuum1 = 31  # POWC/RJ45_4 - Solenoid 2 for vacuum 1
+odor2 = 33    # DIOA/RJ45_5 - Solenoid 3 for odor 2
+vacuum2 = 35  # DIOB/RJ45_6 - Solenoid 4 for vacuum 2
+
+GPIO.setup(irin1, GPIO.IN)
+GPIO.setup(irin2, GPIO.IN)
+GPIO.setup(odor1, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(vacuum1, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(odor2, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(vacuum2, GPIO.OUT, initial=GPIO.HIGH)
+
+while time.time() < timef:
+    for trial in range(num_trials):
+        # Start trial
+        for _ in range(trial_duration * 5):
+            crossed1 = GPIO.input(irin1)
+            crossed2 = GPIO.input(irin2)
+            if crossed1:
+                GPIO.output(odor1, 1)   # Turn on Solenoid 1 (odor 1)
+                GPIO.output(vacuum1, 0) # Turn off Solenoid 2 (vacuum 1)
+            else:
+                GPIO.output(odor1, 0)   # Turn off Solenoid 1 (odor 1)
+                GPIO.output(vacuum1, 1) # Turn on Solenoid 2 (vacuum 1)
+            if crossed2:
+                GPIO.output(odor2, 1)   # Turn on Solenoid 3 (odor 2)
+                GPIO.output(vacuum2, 0) # Turn off Solenoid 4 (vacuum 2)
+            else:
+                GPIO.output(odor2, 0)   # Turn off Solenoid 3 (odor 2)
+                GPIO.output(vacuum2, 1) # Turn on Solenoid 4 (vacuum 2)
+            time.sleep(0.2)
+
+        # End trial
+        GPIO.output(odor1, 0)   # Turn off Solenoid 1 (odor 1)
+        GPIO.output(vacuum1, 1) # Turn on Solenoid 2 (vacuum 1)
+        GPIO.output(odor2, 0)   # Turn off Solenoid 3 (odor 2)
+        GPIO.output(vacuum2, 1) # Turn on Solenoid 4 (vacuum 2)
