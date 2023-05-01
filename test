@@ -1,0 +1,46 @@
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setwarnings(False)
+GPIO.cleanup()
+GPIO.setmode(GPIO.BOARD)
+
+# Set up GPIO pins for IR beams and solenoids
+ir_beam1_pin = 16
+ir_beam2_pin = 18
+odor1_solenoid_pin = 29
+odor2_solenoid_pin = 31
+vacuum_solenoid_pin = 33
+
+GPIO.setup(ir_beam1_pin, GPIO.IN)
+GPIO.setup(ir_beam2_pin, GPIO.IN)
+GPIO.setup(odor1_solenoid_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(odor2_solenoid_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(vacuum_solenoid_pin, GPIO.OUT, initial=GPIO.HIGH)
+
+# Define odor delivery function
+def deliver_odor(odor_solenoid_pin, duration):
+    GPIO.output(odor_solenoid_pin, GPIO.HIGH)
+    time.sleep(duration)
+    GPIO.output(odor_solenoid_pin, GPIO.LOW)
+
+# Define trial function
+def run_trial(trial_duration):
+    start_time = time.time()
+    while time.time() < start_time + trial_duration:
+        if GPIO.input(ir_beam1_pin):
+            deliver_odor(odor1_solenoid_pin, 2)
+            time.sleep(4)
+        if GPIO.input(ir_beam2_pin):
+            deliver_odor(odor2_solenoid_pin, 2)
+            time.sleep(4)
+        time.sleep(0.1)
+
+# Run two trials
+for trial in range(2):
+    print(f"Starting trial {trial + 1}")
+    run_trial(120)  # two minutes
+    print(f"Trial {trial + 1} complete")
+
+# Clean up GPIO
+GPIO.cleanup()
