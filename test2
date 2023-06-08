@@ -14,7 +14,8 @@ odor1 = 29 # POWB/RJ45_3 for solenoid 1 delivering odor 1
 odor2 = 31 # POWC/RJ45_4 for solenoid 2 delivering odor 2
 vacuum1 = 33 # POWD/RJ45_5 for solenoid 1 turning off vacuum 1
 vacuum2 = 35 # POWE/RJ45_6 for solenoid 2 turning off vacuum 2
-cue_light = 40 # GPIO pin number for the cue light
+cue_light1 = 40 # GPIO pin number for the cue light 1
+cue_light = 37 # GPIO pin number for the cue light 2
 
 GPIO.setup(irin1, GPIO.IN)
 GPIO.setup(irin2, GPIO.IN)
@@ -22,7 +23,8 @@ GPIO.setup(odor1, GPIO.OUT)
 GPIO.setup(odor2, GPIO.OUT)
 GPIO.setup(vacuum1, GPIO.OUT)
 GPIO.setup(vacuum2, GPIO.OUT)
-GPIO.setup(cue_light, GPIO.OUT)
+GPIO.setup(cue_light1, GPIO.OUT)
+GPIO.setup(cue_light2, GPIO.OUT)
 
 GPIO.output(vacuum1, 1) # turn on vacuum 1 at the beginning of the experiment
 GPIO.output(vacuum2, 1) # turn on vacuum 2 at the beginning of the experiment
