@@ -7,25 +7,35 @@ GPIO.setmode(GPIO.BOARD)
 
 # Set up GPIO pins for IR beams and solenoids
 ir_beam1_pin = 16
-odor1_solenoid_pin = 29
+led1 = 7
+odor_solenoid_pin = 29
 vacuum_solenoid_pin = 33
 
 GPIO.setup(ir_beam1_pin, GPIO.IN)
-GPIO.setup(odor1_solenoid_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(vacuum_solenoid_pin, GPIO.OUT, initial=GPIO.HIGH)
+GPIO.setup(led1,GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(odor_solenoid_pin, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(vacuum_solenoid_pin, GPIO.OUT, initial=GPIO.LOW)
 
 # Define odor delivery function
 def deliver_odor(odor_solenoid_pin, duration):
     GPIO.output(odor_solenoid_pin, GPIO.HIGH)
     time.sleep(duration)
     GPIO.output(odor_solenoid_pin, GPIO.LOW)
+    
+
+# Define vacuum cease function
+def vacuum_cease(vacuum_solenoid_pin, duration):
+    GPIO.output(vacuum_solenoid_pin, GPIO.HIGH)
+    time.sleep(duration)
+    GPIO.output(vacuum_solenoid_pin, GPIO.LOW)
 
 # Define trial function
 def run_trial(trial_duration):
     start_time = time.time()
     while time.time() < start_time + trial_duration:
         if GPIO.input(ir_beam1_pin):
-            deliver_odor(odor1_solenoid_pin, 2)
+            deliver_odor(odor_solenoid_pin, 1)
+            cease_vacuum(vacuum_solenoid_pin, 1)
         time.sleep(60)
 
 # Run two trials
